@@ -9,11 +9,24 @@ open Microsoft.AspNetCore.Mvc
 type HomeController () =
     inherit Controller()
 
-    member this.Index () =
-        this.View()
+    let getDescription () = async {
+        do! Async.Sleep(500)
+        return "My F# application description page."
+        }
 
-    member this.About () =
-        this.ViewData.["Message"] <- "Your application description page."
+    member this.About () = async {
+        let! msg = getDescription ()
+        this.ViewData.["Message"] <- msg
+        return this.View()
+        }
+
+    member this.About2 () = Async.StartAsTask(async {
+        let! msg = getDescription ()
+        this.ViewData.["Message"] <- msg
+        return this.View("About")
+        })
+
+    member this.Index () =
         this.View()
 
     member this.Contact () =
